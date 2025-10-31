@@ -1,20 +1,32 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useToast } from '@/hooks/use-toast';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useAuth } from '@/contexts/AuthContext';
-import { useEffect } from 'react';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuth } from "@/contexts/AuthContext";
+import { useEffect } from "react";
 
 const Auth = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [grade, setGrade] = useState('9');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [grade, setGrade] = useState("9");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -22,7 +34,7 @@ const Auth = () => {
 
   useEffect(() => {
     if (user) {
-      navigate('/dashboard');
+      navigate("/dashboard");
     }
   }, [user, navigate]);
 
@@ -43,16 +55,16 @@ const Auth = () => {
       if (error) throw error;
 
       toast({
-        title: '¡Cuenta creada!',
-        description: 'Tu cuenta ha sido creada exitosamente.',
+        title: "¡Cuenta creada!",
+        description: "Tu cuenta ha sido creada exitosamente.",
       });
-      
-      navigate('/dashboard');
+
+      navigate("/dashboard");
     } catch (error: any) {
       toast({
-        title: 'Error',
+        title: "Error",
         description: error.message,
-        variant: 'destructive',
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -71,14 +83,15 @@ const Auth = () => {
 
       if (error) throw error;
 
-      navigate('/dashboard');
+      navigate("/dashboard");
     } catch (error: any) {
       toast({
-        title: 'Error',
-        description: error.message === 'Invalid login credentials' 
-          ? 'Credenciales inválidas. Verifica tu correo y contraseña.'
-          : error.message,
-        variant: 'destructive',
+        title: "Error",
+        description:
+          error.message === "Invalid login credentials"
+            ? "Credenciales inválidas. Verifica tu correo y contraseña."
+            : error.message,
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -86,11 +99,11 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-background to-secondary/10 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-background to-secondary/10 p-10">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold">📚 EduAccess</CardTitle>
-          <CardDescription>Educación accesible para todos</CardDescription>
+          <CardTitle className="text-3xl font-bold">RindePlus</CardTitle>
+          <CardDescription>Tu aliado para aprender mejor</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="signin" className="w-full">
@@ -124,7 +137,7 @@ const Auth = () => {
                   />
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+                  {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
                 </Button>
               </form>
             </TabsContent>
@@ -161,17 +174,14 @@ const Auth = () => {
                       <SelectValue placeholder="Selecciona tu grado" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="7">7° Grado</SelectItem>
-                      <SelectItem value="8">8° Grado</SelectItem>
                       <SelectItem value="9">9° Grado</SelectItem>
                       <SelectItem value="10">10° Grado</SelectItem>
                       <SelectItem value="11">11° Grado</SelectItem>
-                      <SelectItem value="12">12° Grado</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? 'Creando cuenta...' : 'Crear Cuenta'}
+                  {loading ? "Creando cuenta..." : "Crear Cuenta"}
                 </Button>
               </form>
             </TabsContent>
