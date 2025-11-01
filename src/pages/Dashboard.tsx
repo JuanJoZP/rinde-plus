@@ -1,15 +1,21 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { useAccessibility } from '@/contexts/AccessibilityContext';
-import { LogOut, Volume2, VolumeX } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { useAccessibility } from "@/contexts/AccessibilityContext";
+import { LogOut, Volume2, VolumeX } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface Subject {
   id: string;
@@ -29,7 +35,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (!user) {
-      navigate('/auth');
+      navigate("/auth");
       return;
     }
 
@@ -37,29 +43,29 @@ const Dashboard = () => {
       try {
         // Get user profile to know their grade
         const { data: profile } = await supabase
-          .from('profiles')
-          .select('grade')
-          .eq('user_id', user.id)
+          .from("profiles")
+          .select("grade")
+          .eq("user_id", user.id)
           .single();
 
         if (profile) {
           setUserGrade(profile.grade);
-          
+
           // Fetch subjects for user's grade
           const { data: subjectsData, error } = await supabase
-            .from('subjects')
-            .select('*')
-            .eq('grade', profile.grade)
-            .order('display_order');
+            .from("subjects")
+            .select("*")
+            .eq("grade", profile.grade)
+            .order("display_order");
 
           if (error) throw error;
           setSubjects(subjectsData || []);
         }
       } catch (error: any) {
         toast({
-          title: 'Error',
+          title: "Error",
           description: error.message,
-          variant: 'destructive',
+          variant: "destructive",
         });
       } finally {
         setLoading(false);
@@ -89,12 +95,16 @@ const Dashboard = () => {
       <header className="border-b bg-card">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">📚 EduAccess</h1>
+            <h1 className="text-2xl font-bold">RindePlus</h1>
             <p className="text-sm text-muted-foreground">Grado {userGrade}</p>
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              {isAccessibilityMode ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+              {isAccessibilityMode ? (
+                <Volume2 className="h-4 w-4" />
+              ) : (
+                <VolumeX className="h-4 w-4" />
+              )}
               <Switch
                 checked={isAccessibilityMode}
                 onCheckedChange={toggleAccessibilityMode}
@@ -128,7 +138,6 @@ const Dashboard = () => {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div className="text-4xl">{subject.icon}</div>
-                  <Badge variant="secondary">Grado {userGrade}</Badge>
                 </div>
                 <CardTitle className="mt-4">{subject.name}</CardTitle>
                 <CardDescription>
