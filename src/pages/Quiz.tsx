@@ -109,6 +109,8 @@ const Quiz = () => {
 
       const answer = await stt.listen();
 
+      toast({ description: answer });
+
       // Normaliza texto (mayúsculas y sin tildes)
       const normalized = answer
         .toUpperCase()
