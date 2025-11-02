@@ -295,24 +295,22 @@ const Quiz = () => {
                 onValueChange={(v) => setSelectedAnswer(parseInt(v))}
               >
                 {question.options.map((option, index) => (
-                  <div
+                  <Label
+                    htmlFor={`option-${index}`}
+                    className="cursor-pointer flex items-center space-x-3 p-4 border rounded-lg hover:bg-accent"
                     key={index}
-                    className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-accent"
                   >
                     <RadioGroupItem
                       value={index.toString()}
                       id={`option-${index}`}
                     />
-                    <Label
-                      htmlFor={`option-${index}`}
-                      className="flex-1 cursor-pointer"
-                    >
+                    <div>
                       <span className="font-bold mr-2">
                         {String.fromCharCode(65 + index)}.
                       </span>
                       {option}
-                    </Label>
-                  </div>
+                    </div>
+                  </Label>
                 ))}
               </RadioGroup>
             )}
