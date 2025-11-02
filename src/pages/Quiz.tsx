@@ -108,14 +108,30 @@ const Quiz = () => {
       await new Promise((r) => setTimeout(r, 300));
 
       const answer = await stt.listen();
-      // Convert A, B, C, D to 0, 1, 2, 3
-      const answerIndex = answer.charCodeAt(0) - 65;
+
+      // Normaliza texto (mayúsculas y sin tildes)
+      const normalized = answer
+        .toUpperCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+
+      // Busca si hay letras válidas (A-D)
+      const matches = normalized.match(/\b[A-D]\b/g); // solo letras solas (con límites de palabra)
+
+      if (!matches || matches.length !== 1) {
+        await tts.speak("No entendí tu respuesta. Por favor di A, B, C o D");
+        return;
+      }
+
+      const letter = matches[0];
+      const answerIndex = letter.charCodeAt(0) - 65;
+
       if (
         answerIndex >= 0 &&
         answerIndex < questions[currentQuestion].options.length
       ) {
         setSelectedAnswer(answerIndex);
-        await tts.speak(`Has seleccionado la opción ${answer}`);
+        await tts.speak(`Has seleccionado la opción ${letter}`);
       } else {
         await tts.speak("No entendí tu respuesta. Por favor di A, B, C o D");
       }
