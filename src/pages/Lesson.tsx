@@ -59,25 +59,6 @@ const Lesson = () => {
     fetchContent();
   }, [user, topicId, topicName, navigate, toast]);
 
-  const handleReadAloud = async () => {
-    if (reading) {
-      tts.cancel();
-      setReading(false);
-    } else {
-      setReading(true);
-      // Remove markdown formatting for speech
-      const plainText = content
-        .replace(/#{1,6}\s/g, "")
-        .replace(/\*\*/g, "")
-        .replace(/\*/g, "")
-        .replace(/\[([^\]]+)\]\([^\)]+\)/g, "$1")
-        .replace(/<[^>]*>/g, "");
-
-      await tts.speak(plainText);
-      setReading(false);
-    }
-  };
-
   const handleStartQuiz = () => {
     navigate(`/quiz/${topicId}`, { state: { topicName } });
   };
@@ -106,16 +87,6 @@ const Lesson = () => {
               <h1 className="text-xl font-bold">{topicName}</h1>
             </div>
           </div>
-          {isAccessibilityMode && (
-            <Button onClick={handleReadAloud} variant="outline">
-              {reading ? (
-                <Pause className="h-4 w-4 mr-2" />
-              ) : (
-                <Play className="h-4 w-4 mr-2" />
-              )}
-              {reading ? "Pausar" : "Leer en Voz Alta"}
-            </Button>
-          )}
         </div>
       </header>
 

@@ -8,7 +8,10 @@ export class TextToSpeech {
     this.synth = window.speechSynthesis;
   }
 
-  speak(text: string, options?: { rate?: number; pitch?: number; volume?: number; lang?: string }) {
+  speak(
+    text: string,
+    options?: { rate?: number; pitch?: number; volume?: number; lang?: string }
+  ) {
     // Cancel any ongoing speech
     this.cancel();
 
@@ -16,7 +19,7 @@ export class TextToSpeech {
     utterance.rate = options?.rate || 0.9;
     utterance.pitch = options?.pitch || 1;
     utterance.volume = options?.volume || 1;
-    utterance.lang = options?.lang || 'es-ES';
+    utterance.lang = options?.lang || "es-ES";
 
     this.currentUtterance = utterance;
     this.synth.speak(utterance);
@@ -42,14 +45,16 @@ export class SpeechToText {
   private isListening = false;
 
   constructor() {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecognition =
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      console.warn('Speech recognition not supported');
+      console.warn("Speech recognition not supported");
       return;
     }
-    
+
     this.recognition = new SpeechRecognition();
-    this.recognition.lang = 'es-ES';
+    this.recognition.lang = "es-ES";
     this.recognition.continuous = false;
     this.recognition.interimResults = false;
   }
@@ -60,10 +65,17 @@ export class SpeechToText {
 
   listen(): Promise<string> {
     if (!this.recognition) {
-      return Promise.reject(new Error('Speech recognition not supported'));
+      return Promise.reject(new Error("Speech recognition not supported"));
+    }
+
+    if (this.isListening) {
+      console.warn("Recognition already running");
+      return Promise.reject("Recognition already running");
     }
 
     return new Promise((resolve, reject) => {
+      this.isListening = true;
+
       this.recognition.onresult = (event: any) => {
         const transcript = event.results[0][0].transcript;
         this.isListening = false;
@@ -72,25 +84,32 @@ export class SpeechToText {
 
       this.recognition.onerror = (event: any) => {
         this.isListening = false;
-        reject(new Error(event.error));
+        reject(event.error);
       };
 
       this.recognition.onend = () => {
         this.isListening = false;
       };
 
-      this.isListening = true;
-      this.recognition.start();
+      try {
+        this.recognition.start();
+      } catch (error) {
+        this.isListening = false;
+        reject(error);
+      }
     });
   }
 
   stopListening() {
-    if (this.recognition && this.isListening) {
-      this.recognition.stop();
-      this.isListening = false;
+    try {
+      if (this.isListening) {
+        this.recognition.stop();
+        this.isListening = false;
+      }
+    } catch (e) {
+      console.warn("stopListening error:", e);
     }
   }
-
   getIsListening(): boolean {
     return this.isListening;
   }

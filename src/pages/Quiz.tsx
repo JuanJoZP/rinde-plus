@@ -99,8 +99,14 @@ const Quiz = () => {
       return;
     }
 
+    if (listening) return;
     setListening(true);
     try {
+      tts.cancel();
+      stt.stopListening();
+
+      await new Promise((r) => setTimeout(r, 300));
+
       const answer = await stt.listen();
       // Convert A, B, C, D to 0, 1, 2, 3
       const answerIndex = answer.charCodeAt(0) - 65;
@@ -116,7 +122,7 @@ const Quiz = () => {
     } catch (error: any) {
       toast({
         title: "Error",
-        description: "No pude escuchar tu respuesta. Intenta de nuevo.",
+        description: String(error),
         variant: "destructive",
       });
     } finally {
@@ -252,67 +258,49 @@ const Quiz = () => {
             <CardTitle className="text-xl">{question.question}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            {isAccessibilityMode ? (
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  {question.options.map((option, index) => (
-                    <Button
-                      key={index}
-                      variant={selectedAnswer === index ? "default" : "outline"}
-                      className="h-auto py-4 text-left justify-start"
-                      onClick={() => setSelectedAnswer(index)}
-                    >
-                      <span className="font-bold mr-2">
-                        {String.fromCharCode(65 + index)}:
-                      </span>
-                      <span className="text-sm">{option}</span>
-                    </Button>
-                  ))}
-                </div>
-                <div className="flex gap-4">
-                  <Button
-                    variant="secondary"
-                    className="flex-1"
-                    onClick={handleVoiceAnswer}
-                    disabled={listening}
-                  >
-                    <Mic
-                      className={`h-4 w-4 mr-2 ${
-                        listening ? "animate-pulse" : ""
-                      }`}
-                    />
-                    {listening ? "Escuchando..." : "Responder por Voz"}
-                  </Button>
-                  <Button variant="secondary" onClick={readQuestion}>
-                    <Volume2 className="h-4 w-4 mr-2" />
-                    Repetir
-                  </Button>
-                </div>
+            <RadioGroup
+              value={selectedAnswer !== null ? selectedAnswer.toString() : ""}
+              onValueChange={(v) => setSelectedAnswer(parseInt(v))}
+            >
+              {question.options.map((option, index) => (
+                <Label
+                  htmlFor={`option-${index}`}
+                  className="cursor-pointer flex items-center space-x-3 p-4 border rounded-lg hover:bg-accent"
+                  key={index}
+                >
+                  <RadioGroupItem
+                    value={index.toString()}
+                    id={`option-${index}`}
+                  />
+                  <div>
+                    <span className="font-bold mr-2">
+                      {String.fromCharCode(65 + index)}.
+                    </span>
+                    {option}
+                  </div>
+                </Label>
+              ))}
+            </RadioGroup>
+            {isAccessibilityMode && (
+              <div className="flex gap-4">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={handleVoiceAnswer}
+                  disabled={listening}
+                >
+                  <Mic
+                    className={`h-4 w-4 mr-2 ${
+                      listening ? "animate-pulse" : ""
+                    }`}
+                  />
+                  {listening ? "Escuchando..." : "Responder"}
+                </Button>
+                <Button variant="outline" onClick={readQuestion}>
+                  <Volume2 className="h-4 w-4 mr-2" />
+                  Repetir
+                </Button>
               </div>
-            ) : (
-              <RadioGroup
-                value={selectedAnswer !== null ? selectedAnswer.toString() : ""}
-                onValueChange={(v) => setSelectedAnswer(parseInt(v))}
-              >
-                {question.options.map((option, index) => (
-                  <Label
-                    htmlFor={`option-${index}`}
-                    className="cursor-pointer flex items-center space-x-3 p-4 border rounded-lg hover:bg-accent"
-                    key={index}
-                  >
-                    <RadioGroupItem
-                      value={index.toString()}
-                      id={`option-${index}`}
-                    />
-                    <div>
-                      <span className="font-bold mr-2">
-                        {String.fromCharCode(65 + index)}.
-                      </span>
-                      {option}
-                    </div>
-                  </Label>
-                ))}
-              </RadioGroup>
             )}
 
             <Button
