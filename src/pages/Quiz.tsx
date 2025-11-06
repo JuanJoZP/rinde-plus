@@ -37,6 +37,22 @@ const Quiz = () => {
   const { isAccessibilityMode } = useAccessibility();
   const { toast } = useToast();
 
+  // Stop any ongoing TTS/STT when the component unmounts or the location changes
+  useEffect(() => {
+    return () => {
+      try {
+        tts.cancel();
+      } catch (e) {
+        // ignore
+      }
+      try {
+        stt.stopListening();
+      } catch (e) {
+        // ignore
+      }
+    };
+  }, [location.pathname, tts, stt]);
+
   useEffect(() => {
     if (!user || !topicId) {
       navigate("/dashboard");
@@ -231,10 +247,23 @@ const Quiz = () => {
               </p>
             </div>
             <div className="flex gap-4 justify-center">
-              <Button onClick={handleRetry} variant="outline">
+              <Button
+                onClick={() => {
+                  tts.cancel();
+                  stt.stopListening();
+                  handleRetry();
+                }}
+                variant="outline"
+              >
                 Intentar de Nuevo
               </Button>
-              <Button onClick={() => navigate("/dashboard")}>
+              <Button
+                onClick={() => {
+                  tts.cancel();
+                  stt.stopListening();
+                  navigate("/dashboard");
+                }}
+              >
                 Volver al Dashboard
               </Button>
             </div>
@@ -252,7 +281,14 @@ const Quiz = () => {
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card">
         <div className="container mx-auto px-4 py-4">
-          <Button variant="ghost" onClick={() => navigate(-1)}>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              tts.cancel();
+              stt.stopListening();
+              navigate(-1);
+            }}
+          >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Volver
           </Button>
