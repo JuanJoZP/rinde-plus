@@ -41,26 +41,49 @@ const Dashboard = () => {
 
     const fetchData = async () => {
       try {
-        // Get user profile to know their grade
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("grade")
-          .eq("user_id", user.id)
-          .single();
+        // Determine grade from navigation state first, then sessionStorage
+        const navState =
+          (window.history.state && (window.history.state.state as any)) || {};
+        const selectedFromState = navState.grade;
 
-        if (profile) {
-          setUserGrade(profile.grade);
-
-          // Fetch subjects for user's grade
-          const { data: subjectsData, error } = await supabase
-            .from("subjects")
-            .select("*")
-            .eq("grade", profile.grade)
-            .order("display_order");
-
-          if (error) throw error;
-          setSubjects(subjectsData || []);
+        let gradeToUse: number | null = null;
+        if (selectedFromState) {
+          gradeToUse = Number(selectedFromState);
         }
+
+        if (!gradeToUse) {
+          // Fallback: try to read from profiles table as before
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("grade")
+            .eq("user_id", user.id)
+            .single();
+
+          if (profile) gradeToUse = profile.grade;
+        }
+
+        if (!gradeToUse) {
+          toast({
+            title: "Error",
+            description: "No se pudo determinar el grado del usuario.",
+            variant: "destructive",
+          });
+          setSubjects([]);
+          setLoading(false);
+          return;
+        }
+
+        setUserGrade(gradeToUse);
+
+        // Fetch subjects for the determined grade
+        const { data: subjectsData, error } = await supabase
+          .from("subjects")
+          .select("*")
+          .eq("grade", gradeToUse)
+          .order("display_order");
+
+        if (error) throw error;
+        setSubjects(subjectsData || []);
       } catch (error: any) {
         toast({
           title: "Error",
@@ -112,10 +135,20 @@ const Dashboard = () => {
               />
               <Label className="text-sm">Modo Accesible</Label>
             </div>
-            <Button variant="outline" size="sm" onClick={signOut}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Salir
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate("/grades")}
+                aria-label="Volver a Grados"
+              >
+                Volver a Grados
+              </Button>
+              <Button variant="outline" size="sm" onClick={signOut}>
+                <LogOut className="h-4 w-4 mr-2" />
+                Salir
+              </Button>
+            </div>
           </div>
         </div>
       </header>

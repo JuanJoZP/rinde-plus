@@ -7,6 +7,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { AccessibilityProvider } from "./contexts/AccessibilityContext";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import Grades from "./pages/Grades";
 import Dashboard from "./pages/Dashboard";
 import SubjectTopics from "./pages/SubjectTopics";
 import Lesson from "./pages/Lesson";
@@ -26,6 +27,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/grades" element={<Grades />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/subjects/:subjectId" element={<SubjectTopics />} />
               <Route path="/lesson/:topicId" element={<Lesson />} />

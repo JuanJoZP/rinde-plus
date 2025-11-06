@@ -34,7 +34,7 @@ const Auth = () => {
 
   useEffect(() => {
     if (user) {
-      navigate("/dashboard");
+  navigate("/grades");
     }
   }, [user, navigate]);
 
@@ -48,7 +48,7 @@ const Auth = () => {
         password,
         options: {
           data: { grade: parseInt(grade) },
-          emailRedirectTo: `${window.location.origin}/dashboard`,
+          emailRedirectTo: `${window.location.origin}/grades`,
         },
       });
 
@@ -59,7 +59,7 @@ const Auth = () => {
         description: "Tu cuenta ha sido creada exitosamente.",
       });
 
-      navigate("/dashboard");
+  navigate("/grades");
     } catch (error: any) {
       toast({
         title: "Error",
@@ -83,7 +83,7 @@ const Auth = () => {
 
       if (error) throw error;
 
-      navigate("/dashboard");
+  navigate("/grades");
     } catch (error: any) {
       toast({
         title: "Error",
